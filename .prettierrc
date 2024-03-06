@@ -1,0 +1,13 @@
+{
+  "overrides": [
+    {
+      "files": ["*.json", "*.js", "*.ts"],
+      "options": {
+        "semi": true,
+        "singleQuote": true,
+        "tabWidth": 2,
+        "trailingComma": "es5"
+      }
+    }
+  ]
+}

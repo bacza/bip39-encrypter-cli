@@ -1,0 +1,10 @@
+.esbuild
+.vscode
+
+node_modules
+build
+coverage
+dist
+tmp
+
+*.log
