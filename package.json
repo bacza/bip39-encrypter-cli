@@ -2,13 +2,13 @@
   "name": "bip39-encrypter-cli",
   "version": "1.0.0",
   "description": "BIP-39 Recovery Phrase Encrypter CLI",
-  "main": "./dist/index.js",
+  "main": "dist/index.js",
   "type": "module",
   "files": [
     "dist"
   ],
   "bin": {
-    "bip39-encrypter-cli": "./dist/index.js"
+    "bip39-encrypter-cli": "dist/index.js"
   },
   "scripts": {
     "build": "tsup",
