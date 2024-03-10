@@ -9,6 +9,8 @@ import pkg from '../package.json';
 
 const CLEAR_PROMPT = { clearPromptOnDone: true };
 
+const COLOR = chalk.cyan;
+
 function findWords(input: string) {
   return WORDS.filter((word) => word.startsWith(input));
 }
@@ -48,11 +50,38 @@ async function getEncrypter() {
       CLEAR_PROMPT
     );
 
-    if (pass1 === pass2) {
-      return new Encrypter(pass1, digits);
+    if (pass1 != pass2) {
+      console.log(chalk.red(fig.cross), 'Passwords mismatch!');
+      continue;
     }
 
-    console.log(chalk.red(fig.cross), "Passwords don't match!");
+    const showPassword = await select(
+      {
+        message: 'Passwords match. Continue?',
+        choices: [
+          { name: 'Yes', value: false },
+          { name: 'No, show the password', value: true },
+        ],
+      },
+      CLEAR_PROMPT
+    );
+
+    if (showPassword) {
+      const isPasswordOK = await select(
+        {
+          message: `The password is: ${COLOR(pass1)}. Continue?`,
+          choices: [
+            { name: 'Yes', value: true },
+            { name: 'No, reenter the password', value: false },
+          ],
+        },
+        CLEAR_PROMPT
+      );
+
+      if (!isPasswordOK) continue;
+    }
+
+    return new Encrypter(pass1, digits);
   }
 }
 
@@ -70,15 +99,13 @@ function getWordChoices(isLast: boolean) {
 }
 
 async function encrypt(enc: Encrypter, length: number) {
-  const color = chalk.cyan;
-
   for (let n = 0; n < length; n++) {
     const isLast = n + 1 >= length;
     const num = `#${n + 1}`;
 
     const word = await autocomplete(
       {
-        message: `Enter word ${color(num)}:`,
+        message: `Enter word ${COLOR(num)}:`,
         source: async (input) =>
           findWords(input || '').map((word) => ({ value: word })),
       },
@@ -89,7 +116,7 @@ async function encrypt(enc: Encrypter, length: number) {
 
     const sel = await select(
       {
-        message: `Word ${color(num)}: ${color(word)}, encrypted: ${color(
+        message: `Word ${COLOR(num)}: ${COLOR(word)}, encrypted: ${COLOR(
           encrypted
         )}. Continue?`,
         choices: getWordChoices(isLast),
@@ -104,15 +131,13 @@ async function encrypt(enc: Encrypter, length: number) {
 }
 
 async function decrypt(enc: Encrypter, length: number) {
-  const color = chalk.cyan;
-
   for (let n = 0; n < length; n++) {
     const isLast = n + 1 >= length;
     const num = `#${n + 1}`;
 
     const encrypted = await input(
       {
-        message: `Enter encrypted word ${color(num)}:`,
+        message: `Enter encrypted word ${COLOR(num)}:`,
         validate: (value) => {
           try {
             enc.decryptWord(value, n);
@@ -129,7 +154,7 @@ async function decrypt(enc: Encrypter, length: number) {
 
     const sel = await select(
       {
-        message: `Word ${color(num)}: ${color(encrypted)}, decrypted: ${color(
+        message: `Word ${COLOR(num)}: ${COLOR(encrypted)}, decrypted: ${COLOR(
           decrypted
         )}. Continue?`,
         choices: getWordChoices(isLast),
